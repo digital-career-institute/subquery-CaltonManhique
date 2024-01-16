@@ -1,0 +1,30 @@
+-- Table creation
+create table students(student_id serial primary key, name varchar(60));
+create table courses(course_id int primary key, course_name varchar(60));
+create table enrollments(student_id int, course_id int, constraint student_id foreign key (student_id)
+						references students(student_id),constraint course_id foreign key (course_id)
+						references courses(course_id));
+
+-- Data entries
+insert into students(name) values('Alice'),('Bob'),('Charlie'),('David');
+insert into courses(course_id,course_name) values(101,'Math'),(102,'English'),(103,'Science'),(104,'History');
+insert into enrollments(student_id,course_id) values(1,101),(1,102),(2,101),(3,102),(4,103);
+
+-- 1. Write a query to retrieve the names of students who are enrolled in the 'Math' course.
+select s.name from students s where s.student_id IN(
+	select e.student_id from enrollments e where e.course_id = 101
+	)
+order by s.student_id;
+
+-- Write a query to find the names of students who are not enrolled in any course.
+select s.name from students s where s.student_id NOT IN(
+	select e.student_id from enrollments e where e.course_id in(101,102,103) 
+	)
+order by s.student_id;
+
+-- Write a query to retrieve the names of students who are enrolled in both 'Math' and 'English' courses.
+select s.name from students s where s.student_id IN(
+	select e.student_id from enrollments e where e.course_id = 101)
+	AND s.student_id IN(
+	select e.student_id from enrollments e where e.course_id = 102)
+order by s.student_id;
